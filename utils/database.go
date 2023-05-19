@@ -2,7 +2,7 @@ package utils
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -16,27 +16,38 @@ const (
 )
 
 func GetConnection() *sql.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sql.Open("postgres", "postgres://postgres:252900@localhost/postgres2?sslmode=disable")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	// defer db.Close()
+	defer db.Close()
 
-	// err = db.Ping()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	fmt.Println("Successfully connected!")
-	// ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
-	// defer cancelfunc()
-	// err = db.PingContext(ctx)
-	// if err != nil {
-	// 	log.Printf("Errors %s pinging DB", err)
-	// 	return
-	// }
-	// log.Printf("Connected to DB %s successfully\n", dbname)
+	// Create user table if it doesn't exist
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			email VARCHAR(255) NOT NULL,
+			name VARCHAR(255) NOT NULL,
+			dob DATE NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW()
+		)
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create movie table if it doesn't exist
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS movies (
+			id SERIAL PRIMARY KEY,
+			user_id INT NOT NULL,
+			title VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+		)
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return db
 }
