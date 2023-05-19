@@ -1,17 +1,22 @@
-package main
+package router
 
 import (
-	"net/http"
+	"goserver2/services"
 
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+// SetupRouter sets up the Gin router and registers the route handlers
+func SetupRouter() *gin.Engine {
+	// Initialize Gin router
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+
+	// Register routes
+	r.POST("/users", services.RegisterUser)
+	r.GET("/users", services.ListUsers)
+	r.POST("/movies", services.AddMovie)
+	r.DELETE("/movies/:id", services.DeleteMovie)
+	r.GET("/movies/:user_id", services.ListMoviesForUser)
+
+	return r
 }

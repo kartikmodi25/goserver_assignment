@@ -7,14 +7,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "252900"
-	dbname   = "postgres2"
-)
-
 func GetConnection() *sql.DB {
 	db, err := sql.Open("postgres", "postgres://postgres:252900@localhost/postgres2?sslmode=disable")
 	if err != nil {
