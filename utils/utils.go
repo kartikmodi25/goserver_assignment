@@ -12,7 +12,7 @@ func GetConnection() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	// defer db.Close()
 
 	// Create user table if it doesn't exist
 	_, err = db.Exec(`
@@ -41,5 +41,6 @@ func GetConnection() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// fmt.Println("DB STARTED")
 	return db
 }

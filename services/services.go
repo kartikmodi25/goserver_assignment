@@ -2,37 +2,24 @@ package services
 
 import (
 	"database/sql"
+	"goserver2/models"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
-type User struct {
-	ID        int       `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	DOB       time.Time `json:"dob"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-// Movie struct to represent a movie
-type Movie struct {
-	ID        int       `json:"id"`
-	UserID    int       `json:"user_id"`
-	Title     string    `json:"title"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
 var db *sql.DB
 
+// var db = utils.GetConnection()
+
+// defer db.Close()
 // User struct to represent a registered user
 
 // RegisterUser registers a new user
 func RegisterUser(c *gin.Context) {
-	var user User
+	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -62,9 +49,9 @@ func ListUsers(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	users := []User{}
+	users := []models.User{}
 	for rows.Next() {
-		var user User
+		var user models.User
 		if err := rows.Scan(&user.ID, &user.Email, &user.Name, &user.DOB, &user.CreatedAt); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -77,7 +64,7 @@ func ListUsers(c *gin.Context) {
 
 // AddMovie adds a new movie for a user
 func AddMovie(c *gin.Context) {
-	var movie Movie
+	var movie models.Movie
 	if err := c.ShouldBindJSON(&movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -142,9 +129,9 @@ func ListMoviesForUser(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	movies := []Movie{}
+	movies := []models.Movie{}
 	for rows.Next() {
-		var movie Movie
+		var movie models.Movie
 		if err := rows.Scan(&movie.ID, &movie.UserID, &movie.Title, &movie.CreatedAt); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -153,4 +140,9 @@ func ListMoviesForUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, movies)
+}
+
+func SetDB(dbconn *sql.DB) {
+	db = dbconn
+	// fmt.Println(db)
 }
