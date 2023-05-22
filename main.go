@@ -14,6 +14,7 @@ func main() {
 	db = utils.GetConnection()
 	// fmt.Println(db)
 	services.SetDB(db)
+	defer db.Close()
 	// fmt.Println(db)
 	// var err error
 	// db, err = sql.Open("postgres", "postgres://postgres:252900@localhost/postgres2?sslmode=disable")
