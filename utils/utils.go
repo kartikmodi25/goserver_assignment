@@ -2,24 +2,13 @@ package utils
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
-func getDBConnectionString() string {
-	dbUsername := os.Getenv("DB_USERNAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUsername, dbPassword, dbHost, dbPort, dbName)
-}
 func GetConnection() *sql.DB {
-	db, err := sql.Open("postgres", getDBConnectionString())
+	db, err := sql.Open("postgres", "postgres://postgres:252900@localhost/postgres2?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
