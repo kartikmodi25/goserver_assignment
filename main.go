@@ -6,6 +6,10 @@ import (
 	"goserver2/services"
 	"goserver2/utils"
 	"log"
+	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
@@ -15,7 +19,16 @@ func main() {
 	services.SetDB(db)
 	defer db.Close()
 	r := router.SetupRouter()
-	if err := r.Run(":8080"); err != nil {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	portStr := os.Getenv("PORT")
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		log.Fatal("Invalid port number")
+	}
+	if err := r.Run(":" + strconv.Itoa(port)); err != nil {
 		log.Fatal(err)
 	}
 }

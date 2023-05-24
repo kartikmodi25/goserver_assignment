@@ -2,17 +2,27 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func GetConnection() *sql.DB {
-	db, err := sql.Open("postgres", "postgres://postgres:252900@localhost/postgres2?sslmode=disable")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USERNAME"),
+		os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME")))
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	// defer db.Close()
 
 	// Create user table if it doesn't exist
 	_, err = db.Exec(`
