@@ -17,6 +17,7 @@ func SetupRouter() *gin.Engine {
 	r.POST("/movies", services.AddMovie)
 	r.DELETE("/movies/:id", services.DeleteMovie)
 	r.GET("/movies/:user_id", services.ListMoviesForUser)
+	r.GET("/movies", services.ListMovies)
 
 	return r
 }

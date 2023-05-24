@@ -12,11 +12,6 @@ import (
 
 var db *sql.DB
 
-// var db = utils.GetConnection()
-
-// defer db.Close()
-// User struct to represent a registered user
-
 // RegisterUser registers a new user
 func RegisterUser(c *gin.Context) {
 	var user models.User
@@ -142,7 +137,26 @@ func ListMoviesForUser(c *gin.Context) {
 	c.JSON(http.StatusOK, movies)
 }
 
+func ListMovies(c *gin.Context) {
+	rows, err := db.Query("SELECT * FROM movies")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	movies := []models.Movie{}
+	for rows.Next() {
+		var movie models.Movie
+		if err := rows.Scan(&movie.ID, &movie.UserID, &movie.Title, &movie.CreatedAt); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		movies = append(movies, movie)
+	}
+
+	c.JSON(http.StatusOK, movies)
+}
 func SetDB(dbconn *sql.DB) {
 	db = dbconn
-	// fmt.Println(db)
 }
